@@ -1,0 +1,14 @@
+/* Projeto: Gerenciador de Frete Interoperável */
+
+mas gerenciador_frete {
+
+    agent consultor  : examples/logistica/consultor_cep.asl
+    agent negociador : examples/logistica/negociador.asl
+
+    workspace main {
+        artifact cepApi: BrasilApiCepClient
+    }
+    
+    // Habilita a comunicação REST na porta 8080
+    platform: jacamo.rest.JCMRest("--rest-port 8080 --cors true")
+}
