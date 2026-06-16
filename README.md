@@ -66,17 +66,13 @@ Dependências externas em tempo de execução:
 │   └── metrics_collector.py       # Coleta de métricas (separada do canal)
 ├── spade/
 │   └── transportadoras_spade.py   # Hub das transportadoras
-├── jacamo/
-│   ├── gerenciador_frete.jcm      # Projeto JaCaMo
-│   └── examples/logistica/
-│       ├── consultor_cep.asl      # Agente consultor de CEP
-│       └── negociador.asl         # Agente negociador (leilão)
-└── jacamo-web.zip                 # Instalação jacamo-web com as 2 classes Java (ver abaixo)
+└── jacamo-web.zip                 # Instalação jacamo-web (Java + agentes .asl/.jcm)
 ```
 
-> Os caminhos dentro de `gerenciador_frete.jcm` apontam para
-> `examples/logistica/`. Mantenha os `.asl` nessa subpasta (ou ajuste os
-> caminhos no `.jcm` conforme onde você os colocar).
+> Os arquivos do JaCaMo (`consultor_cep.asl`, `negociador.asl`,
+> `gerenciador_frete.jcm`) e as duas classes Java já estão dentro do
+> `jacamo-web.zip`, em `examples/logistica/` e na árvore de fontes,
+> respectivamente.
 
 ---
 
@@ -112,21 +108,26 @@ jacamo-rest 0.5) já contendo as duas classes nos lugares corretos.
 
 ## Execução
 
-Como o agente `consultor` dispara o fluxo automaticamente ao iniciar, suba os
-serviços que recebem mensagens **antes** de iniciar o JaCaMo.
+A ordem importa: o agente `consultor` (JaCaMo) dispara o fluxo automaticamente
+ao iniciar, então o JaCaMo deve ser o **último** a subir, com os serviços que
+recebem mensagens (MASPY e SPADE) já no ar.
 
-1. Garanta que o servidor XMPP esteja acessível.
+**Pré-condição:** garanta que o servidor XMPP esteja acessível antes do passo 2
+(o agente SPADE se conecta a ele ao iniciar).
+
+1. Inicie a frota MASPY (porta 9000):
+   ```
+   python maspy/veiculo_maspy.py
+   ```
 2. Inicie o hub SPADE (porta 5000):
    ```
    python spade/transportadoras_spade.py
    ```
-3. Inicie a frota MASPY (porta 9000):
+3. Inicie o JaCaMo a partir da pasta extraída do `jacamo-web.zip` (porta 8080):
    ```
-   python maspy/veiculo_maspy.py
+   gradlew.bat run --args="examples/logistica/gerenciador_frete.jcm"
    ```
-4. Inicie o projeto JaCaMo (`gerenciador_frete.jcm`) pelo jacamo-web já
-   recompilado (porta 8080). O `consultor` consulta um CEP de teste e o fluxo
-   completo é disparado.
+   O `consultor` consulta um CEP de teste e o fluxo completo é disparado.
 
 ---
 
