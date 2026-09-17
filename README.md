@@ -268,3 +268,6 @@ todas as execuções são exportadas para `maspy/metricas_experimento.csv`.
   o ciclo BDI dos agentes.
 - O protótipo não usa TLS; é destinado a redes locais confiáveis e ambientes de
   prova de conceito.
+
+  ## Contato com autor:
+  João Paulo de Macedo Lepinsk - llepinsk@alunos.utfpr.edu.br
