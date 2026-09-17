@@ -15,9 +15,11 @@ Métricas (MetricsCollector — separado do canal):
   G4 — Latência end-to-end
 """
 
+import os
 import json
 import time
 import random
+import socket
 from maspy import *
 from external_channel import ExternalChannel, FIPAMessage
 from metrics_collector import MetricsCollector
@@ -33,7 +35,9 @@ FATOR_TEMPO  = 2.0
 # O veículo eleito envia eventos de rastreamento direto ao JaCaMo,
 # usando o formato jacamo-rest. Espelha um app de delivery em tempo real:
 # a confirmação comercial vem do SPADE, o rastreamento vem do veículo.
-IP_JACAMO    = "10.142.227.96"   # host do JaCaMo na rede local — ajustar ao seu ambiente
+# O jacamo-rest escuta no IP de rede da máquina (não em localhost). Por padrão,
+# esse IP é detectado automaticamente; defina a variável IP_JACAMO para sobrescrever.
+IP_JACAMO    = os.environ.get("IP_JACAMO") or socket.gethostbyname(socket.gethostname())
 URL_JACAMO   = f"http://{IP_JACAMO}:8080/agents/negociador/inbox"
 AID_JACAMO   = "negociador@jacamo"
 
@@ -323,7 +327,9 @@ def main():
         # Exibe relatório final e salva CSV ao encerrar
         print("\n[Encerrando experimento...]")
         mc.imprimir_relatorio_final()
-        mc.salvar_csv("metricas_experimento.csv")
+        # Salva ao lado deste script, independentemente da pasta de execução
+        mc.salvar_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "metricas_experimento.csv"))
 
 
 def _instalar_hook_post(canal):

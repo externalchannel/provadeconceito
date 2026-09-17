@@ -1,5 +1,7 @@
+import os
 import json
 import random
+import socket
 import asyncio
 import aiohttp
 import sys
@@ -42,7 +44,9 @@ def calcular_custo(transportadora, estado):
 # ══════════════════════════════════════════════════════════════════════════════
 # Configurações de rede
 # ══════════════════════════════════════════════════════════════════════════════
-IP_JACAMO       = "10.142.227.96"   # host do JaCaMo na rede local — ajustar ao seu ambiente
+# O jacamo-rest escuta no IP de rede da máquina (não em localhost). Por padrão,
+# esse IP é detectado automaticamente; defina a variável IP_JACAMO para sobrescrever.
+IP_JACAMO       = os.environ.get("IP_JACAMO") or socket.gethostbyname(socket.gethostname())
 PORTA_JACAMO    = "8080"
 URL_BASE_JACAMO = f"http://{IP_JACAMO}:{PORTA_JACAMO}"
 
@@ -228,9 +232,10 @@ class HubTransportadoras(Agent):
 
 
 async def main():
-    # Configure com uma conta XMPP válida antes de executar.
-    JID_AGENTE   = "ponte_jacamo_hub_2026@yax.im"
-    SENHA_AGENTE = "<defina_a_senha_do_agente>"
+    # Padrão: servidor XMPP local embutido no SPADE (execute `spade run` antes).
+    # Para usar outro servidor XMPP, defina as variáveis SPADE_JID e SPADE_SENHA.
+    JID_AGENTE   = os.environ.get("SPADE_JID", "hub@localhost")
+    SENHA_AGENTE = os.environ.get("SPADE_SENHA", "senha_hub")
     agente = HubTransportadoras(JID_AGENTE, SENHA_AGENTE)
     await agente.start()
     while agente.is_alive():
