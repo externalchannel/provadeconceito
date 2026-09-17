@@ -269,5 +269,5 @@ todas as execuções são exportadas para `maspy/metricas_experimento.csv`.
 - O protótipo não usa TLS; é destinado a redes locais confiáveis e ambientes de
   prova de conceito.
 
-  ## Contato com autor:
-  João Paulo de Macedo Lepinsk - llepinsk@alunos.utfpr.edu.br
+Contato com autor:
+  João Paulo de Macedo Lepinsk - lepinsk@alunos.utfpr.edu.br
