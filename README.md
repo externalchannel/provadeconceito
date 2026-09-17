@@ -41,7 +41,7 @@ Fluxo de uma execução:
 
 | Dependência | Versão usada no experimento | Como instalar |
 |-------------|-----------------------------|---------------|
-| **Python** | 3.12+ (testado em 3.13.2) | <https://www.python.org/downloads/> — no Windows, marque *Add python.exe to PATH* |
+| **Python** | 3.12+ (testado em 3.13.2 e 3.14.5) | <https://www.python.org/downloads/> — no Windows, marque *Add python.exe to PATH* |
 | **Java (JDK)** | 17 (LTS) | por exemplo, <https://adoptium.net/> |
 | **MASPY** (`maspy-ml`) | 2026.5.13 | `pip install maspy-ml==2026.5.13` |
 | **SPADE** | 4.1.2 | `pip install spade==4.1.2` |
@@ -69,6 +69,11 @@ python -c "import maspy, spade; print('MASPY e SPADE OK')"
 Necessário para o Gradle baixar as bibliotecas do JaCaMo (primeira execução) e
 para a consulta à **API pública de CEP** (BrasilAPI), feita pelo artefato
 CArtAgO a cada execução.
+
+Na **primeira execução**, o Gradle baixa a própria distribuição (Gradle 7.6) e
+as bibliotecas do JaCaMo — cerca de **340 MB** em disco —, o que pode levar
+vários minutos, conforme a conexão. Esses arquivos ficam em cache na pasta
+`.gradle` do usuário, e as execuções seguintes iniciam em segundos.
 
 ---
 
@@ -126,7 +131,7 @@ O script executa, em sequência:
 | — | Detecta o IP de rede da máquina, usado pelo jacamo-rest. |
 | 3/5 | Abre a janela **XMPP (SPADE)** com o servidor XMPP local e aguarda a porta 5222. |
 | 4/5 | Abre a janela **MASPY - Frota** e aguarda a porta 9000; depois abre a janela **SPADE - Hub** e aguarda a porta 5000. |
-| 5/5 | Abre a janela **JaCaMo**, que compila o projeto (na primeira vez, baixa as bibliotecas) e dispara o fluxo. |
+| 5/5 | Abre a janela **JaCaMo**, que compila o projeto e dispara o fluxo. Na primeira vez, baixa cerca de 340 MB de dependências antes de iniciar (pode levar vários minutos). |
 
 Cada plataforma fica em sua própria janela. O fluxo foi concluído com sucesso
 quando a janela **JaCaMo** exibe:
@@ -214,6 +219,22 @@ No PowerShell, use `$env:SPADE_JID="..."`; no Linux/macOS, `export SPADE_JID=...
 ---
 
 ## Solução de problemas
+
+**`DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated...` (janela SPADE - Hub)**
+Aviso esperado no Python 3.14 ou superior, não é um erro. Se, em seguida,
+aparecer `[SPADE] Hub de Transportadoras iniciado na porta 5000!`, o hub está
+funcionando normalmente.
+
+**Janela SPADE - Hub volta ao prompt sem exibir `Hub de Transportadoras iniciado`**
+A conexão com o servidor XMPP local falhou na partida, o que pode ocorrer de
+forma intermitente. Feche todas as janelas abertas pelo `.bat` e execute-o
+novamente. Se o problema persistir, veja o item *Hub SPADE não inicia* abaixo;
+o motivo da falha fica registrado em `spade/spade_xmpp_debug.log`.
+
+**JaCaMo demora a iniciar e baixa muitas dependências**
+Comportamento normal na primeira execução (cerca de 340 MB; ver
+[Acesso à internet](#acesso-à-internet)). Aguarde até o fluxo começar; as
+próximas execuções usam o cache.
 
 **`[consultor] Erro na API: Connect timed out` (janela JaCaMo)**
 A consulta à API pública de CEP excedeu o tempo limite de 5 s (comum em redes
