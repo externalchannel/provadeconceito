@@ -191,6 +191,51 @@ qualquer diretório; os caminhos abaixo são relativos à raiz do repositório.
 
 ---
 
+## Trocar o CEP de teste
+
+Nesta PoC, o agente `consultor` usa por padrão o CEP **`01001000`**
+(01001-000, São Paulo/SP). Para testar outro CEP:
+
+1. Execute o experimento uma vez (ou extraia o `jacamo-web.zip`), para que a
+   pasta `jacamo-web/` exista.
+2. Abra em um editor de texto o arquivo
+   `jacamo-web/examples/logistica/consultor_cep.asl`.
+3. Localize a linha abaixo e substitua `01001000` pelo CEP desejado, mantendo
+   as aspas e o ponto final:
+   ```
+   !consultar_cep("01001000").
+   ```
+   Por exemplo, para o CEP 20040-002 (Rio de Janeiro/RJ):
+   ```
+   !consultar_cep("20040002").
+   ```
+4. Salve o arquivo e execute novamente o JaCaMo (ou o `iniciar_experimento.bat`).
+   Não é preciso recompilar.
+
+A janela JaCaMo confirma o CEP usado e o estado retornado pela API:
+
+```
+[consultor] Consultando API para o CEP: 20040002
+[consultor] Sucesso! Estado: RJ
+```
+
+Observações:
+
+- O CEP deve ter **8 dígitos**. Caracteres que não são dígitos (como o hífen)
+  são removidos antes da consulta. Um CEP com outra quantidade de dígitos gera
+  `[consultor] Erro na API: CEP inválido. Use 8 dígitos.`, e um CEP inexistente
+  gera um erro HTTP da API.
+- O **estado** retornado define a região usada pelo hub SPADE no cálculo dos
+  lances. Por isso, CEPs de outras regiões alteram os custos das
+  transportadoras (fatores: Sul 1.0, Sudeste 1.2, Centro-Oeste 1.5,
+  Nordeste 1.8, Norte 2.2).
+- A alteração vale apenas para a pasta extraída; o `jacamo-web.zip` não é
+  modificado. O `.bat` não sobrescreve a pasta `jacamo-web/` já existente. Para
+  voltar ao CEP padrão, desfaça a edição ou apague a pasta `jacamo-web/` (ela
+  será extraída novamente na próxima execução do `.bat`).
+
+---
+
 ## Configuração opcional
 
 Nenhuma edição de código é necessária. Os valores padrão atendem à execução
